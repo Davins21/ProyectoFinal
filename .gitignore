@@ -1,0 +1,29 @@
+# Archivos y carpetas de Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.VC.db
+*.VC.opendb
+*.VC.db-shm
+*.VC.db-wal
+*.ipch
+*.pch
+ipch/
+
+# Salidas de compilación
+bin/
+obj/
+x64/
+Debug/
+Release/
+*.exe
+*.pdb
+*.obj
+*.idb
+*.log
+*.ilk
+
+# Librerías dinámicas / estáticas generadas
+*.lib
+*.dll
