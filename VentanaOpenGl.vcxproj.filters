@@ -60,6 +60,30 @@
     <ClCompile Include="Bezier.cpp">
       <Filter>Archivos de recursos</Filter>
     </ClCompile>
+    <ClCompile Include="Libraries\include\ImGui\imgui.cpp">
+      <Filter>Archivos de recursos</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\include\ImGui\imgui_draw.cpp">
+      <Filter>Archivos de recursos</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\include\ImGui\imgui_tables.cpp">
+      <Filter>Archivos de recursos</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\include\ImGui\imgui_widgets.cpp">
+      <Filter>Archivos de recursos</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\include\ImGui\backends\imgui_impl_glfw.cpp">
+      <Filter>Archivos de recursos</Filter>
+    </ClCompile>
+    <ClCompile Include="Libraries\include\ImGui\backends\imgui_impl_opengl3.cpp">
+      <Filter>Archivos de recursos</Filter>
+    </ClCompile>
+    <ClCompile Include="DragonController.cpp">
+      <Filter>Archivos de recursos</Filter>
+    </ClCompile>
+    <ClCompile Include="Interfaz.cpp">
+      <Filter>Archivos de recursos</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="default.vert">
@@ -72,6 +96,12 @@
       <Filter>Archivos de origen\Shaders</Filter>
     </None>
     <None Include="dragon.vert">
+      <Filter>Archivos de origen\Shaders</Filter>
+    </None>
+    <None Include="curve.vert">
+      <Filter>Archivos de origen\Shaders</Filter>
+    </None>
+    <None Include="curve.frag">
       <Filter>Archivos de origen\Shaders</Filter>
     </None>
   </ItemGroup>
@@ -104,6 +134,12 @@
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="Bezier.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="DragonController.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="Interfaz.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>

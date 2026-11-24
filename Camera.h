@@ -1,57 +1,88 @@
-#ifndef CAMERA_CLASS_H
-#define CAMERA_CLASS_H
+
+#ifndef CAMERA_H
+#define CAMERA_H
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include "ShaderClass.h"
 
-class Camera {
+class Camera
+{
 public:
-	// Atributos de transformación
-	glm::vec3 Position;
-	glm::vec3 Orientation;
-	glm::vec3 Up;
 
-	// Dimensiones de la ventana
-	int width;
-	int height;
+    int width;
+    int height;
 
-	// Configuración de movimiento y sensibilidad
-	float speed;
-	float sensitivity;
+    glm::vec3 Position;
+    glm::vec3 Orientation;
+    glm::vec3 Up;
 
-	// Variables para el control de rotación del mouse
-	float yaw;
-	float pitch;
-	bool firstMouse;
-	float lastX;
-	float lastY;
+    float speed;
+    float sensitivity;
 
-	// Constructor
-	Camera(int width, int height, glm::vec3 position);
+    float yaw;
+    float pitch;
 
-	// Registra callbacks e inputs de GLFW
-	void SetupInputs(GLFWwindow* window);
+    float lastX;
+    float lastY;
 
-	// Callback estático para el movimiento del mouse
-	static void MouseCallback(GLFWwindow* window, double xposIn, double yposIn);
+    bool firstMouse;
 
-	// Procesar entradas de teclado (WASD, Espacio, Shift)
-	void ProcessInputs(GLFWwindow* window, float deltaTime);
+    // Inicializar camara
+    Camera(int width, int height, glm::vec3 position);
 
-	// Procesar rotación de visión
-	void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
+    // Configurar entradas
+    void SetupInputs(GLFWwindow* window);
 
-	// Métodos para generar matrices
-	glm::mat4 GetViewMatrix();
-	glm::mat4 GetProjectionMatrix(float FOVdeg, float nearPlane, float farPlane);
+    // Procesar movimiento de camara
+    void ProcessInputs(GLFWwindow* window, float deltaTime);
 
-	// Actualizar y enviar la matriz MVP unificada al Shader
-	void UpdateMatrix(Shader& shader, const char* uniformName, glm::mat4 modelMatrix, float FOVdeg = 60.0f, float nearPlane = 0.1f, float farPlane = 1000.0f);
+    // Procesar movimiento del mouse
+    void ProcessMouseMovement(
+        float xoffset,
+        float yoffset,
+        GLboolean constrainPitch = true
+    );
+
+    // Cambiar entre camara 3D e interfaz
+    void SetCameraMode(GLFWwindow* window, bool enabled);
+
+    // Obtener matriz de vista
+    glm::mat4 GetViewMatrix();
+
+    // Obtener matriz de proyeccion
+    glm::mat4 GetProjectionMatrix(
+        float FOVdeg,
+        float nearPlane,
+        float farPlane
+    );
+
+    // Actualizar matriz MVP
+    void UpdateMatrix(
+        Shader& shader,
+        const char* uniformName,
+        glm::mat4 modelMatrix,
+        float FOVdeg,
+        float nearPlane,
+        float farPlane
+    );
+
+private:
+
+    // Estado del modo de camara
+    bool cameraMode = true;
+
+    // Callback del mouse
+    static void MouseCallback(
+        GLFWwindow* window,
+        double xposIn,
+        double yposIn
+    );
 };
 
 #endif

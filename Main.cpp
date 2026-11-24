@@ -8,17 +8,20 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Interfaz.h"
 #include "ShaderClass.h"
 #include "Camera.h"
 #include "ModelGLTF.h"
 #include "AnimatedModelGLTF.h"
 #include "Iluminacion.h"
 #include "Bezier.h"
-
+#include "DragonController.h"
 
 int main()
 {
-    // =====================================================
+    // =============================================
+    // 1. INICIALIZAR GLFW
+    // =============================================
 
     if (!glfwInit())
     {
@@ -58,9 +61,9 @@ int main()
     std::cout << "OpenGL inicializado correctamente" << std::endl;
 
 
-    // =====================================================
+    // =============================================
     // 2. CONFIGURACION OPENGL
-    // =====================================================
+    // =============================================
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -72,9 +75,9 @@ int main()
     glDepthMask(GL_TRUE);
 
 
-    // =====================================================
+    // =============================================
     // 3. SHADER E ILUMINACION DEL CASTILLO
-    // =====================================================
+    // =============================================
 
     Shader shaderProgram(
         "default.vert",
@@ -84,9 +87,9 @@ int main()
     SunLight sun(shaderProgram.ID);
 
 
-    // =====================================================
+    // =============================================
     // 4. CARGAR CASTILLO
-    // =====================================================
+    // =============================================
 
     ModelGLTF modelGLTF;
 
@@ -107,19 +110,24 @@ int main()
     std::cout << "Castillo cargado correctamente" << std::endl;
 
 
-    // =====================================================
-    // 5. SHADER DEL DRAGON
-    // =====================================================
+    // =============================================
+    // 5. SHADERS DEL DRAGON Y BEZIER
+    // =============================================
 
     Shader dragonShader(
         "dragon.vert",
         "dragon.frag"
     );
 
+    Shader curveShader(
+        "curve.vert",
+        "curve.frag"
+    );
 
-    // =====================================================
+
+    // =============================================
     // 6. CARGAR MOUNTAIN DRAGON
-    // =====================================================
+    // =============================================
 
     AnimatedModelGLTF dragon;
 
@@ -133,6 +141,7 @@ int main()
 
         shaderProgram.Delete();
         dragonShader.Delete();
+        curveShader.Delete();
 
         glfwDestroyWindow(window);
         glfwTerminate();
@@ -149,9 +158,9 @@ int main()
         << dragon.GetDuration() << " segundos" << std::endl;
 
 
-    // =====================================================
+    // =============================================
     // 7. CAMARA
-    // =====================================================
+    // =============================================
 
     Camera camera(
         800,
@@ -161,10 +170,22 @@ int main()
 
     camera.SetupInputs(window);
 
+    bool cameraMode = true;
+    bool previousTab = false;
 
-    // =====================================================
-    // 8. UNIFORMS DEL CASTILLO
-    // =====================================================
+
+    // =============================================
+    // 8. INICIALIZAR INTERFAZ
+    // =============================================
+
+    Interfaz interfaz;
+
+    interfaz.Initialize(window);
+
+
+    // =============================================
+    // 9. UNIFORMS DEL CASTILLO
+    // =============================================
 
     GLint tintLoc = glGetUniformLocation(
         shaderProgram.ID,
@@ -177,9 +198,9 @@ int main()
     );
 
 
-    // =====================================================
-    // 9. UNIFORMS DEL DRAGON
-    // =====================================================
+    // =============================================
+    // 10. UNIFORMS DEL DRAGON
+    // =============================================
 
     GLint dragonSunDirection = glGetUniformLocation(
         dragonShader.ID,
@@ -197,9 +218,9 @@ int main()
     );
 
 
-    // =====================================================
-    // 10. CONTROL DE ANIMACION
-    // =====================================================
+    // =============================================
+    // 11. CONFIGURAR ANIMACION
+    // =============================================
 
     float lastFrame = 0.0f;
 
@@ -208,95 +229,42 @@ int main()
     bool previousLeftBracket = false;
     bool previousRightBracket = false;
 
-    // Tiempos originales de Take 001
-
-    const float startTime = 0.0f;
     const float takeoffTime = 21.07f;
-    const float flightEndTime = 41.62f;
-
-
-    // Iniciar directamente con la animacion de vuelo
-    dragon.SetAnimationRange(
-        21.07f,
-        41.62f,
-        true
-    );
-
-    // El dragon comienza volando
-    bool flightStarted = true;
-
-    float flightTime = 0.0f;
-
-    // Duracion de una vuelta completa
+    const float flightEndTime = 41.00f;
     const float flightDuration = 20.55f;
 
 
-    // =====================================================
-    // 11. CONFIGURACION DE BEZIER
-    // =====================================================
+    // =============================================
+    // 12. CREAR TRAYECTORIA BEZIER
+    // =============================================
 
-    // Centro aproximado del castillo
+    glm::vec3 center(0.0f, 0.0f, 0.0f);
 
-    glm::vec3 center(
-        0.0f,
-        0.0f,
-        0.0f
-    );
-
-    // Radio y altura del vuelo
-
-    const float flightRadius = 35.0f;
-    const float flightHeight = 12.0f;
-
-    const float k = 0.55228475f;
-
-    float r = flightRadius;
-    float h = flightHeight;
-
-
-    // Curva 1: frente hacia derecha
-
-    Bezier curve1(
-        center + glm::vec3(0, h, r),
-        center + glm::vec3(k * r, h, r),
-        center + glm::vec3(r, h, k * r),
-        center + glm::vec3(r, h, 0)
+    BezierPath dragonPath(
+        center,
+        35.0f,
+        12.0f,
+        80
     );
 
 
-    // Curva 2: derecha hacia atras
+    // =============================================
+    // 13. CREAR CONTROLADOR DEL DRAGON
+    // =============================================
 
-    Bezier curve2(
-        center + glm::vec3(r, h, 0),
-        center + glm::vec3(r, h, -k * r),
-        center + glm::vec3(k * r, h, -r),
-        center + glm::vec3(0, h, -r)
+    DragonController dragonController(
+        dragon,
+        dragonPath,
+        takeoffTime,
+        flightEndTime,
+        flightDuration,
+        0.025f
     );
 
 
-    // Curva 3: atras hacia izquierda
-
-    Bezier curve3(
-        center + glm::vec3(0, h, -r),
-        center + glm::vec3(-k * r, h, -r),
-        center + glm::vec3(-r, h, -k * r),
-        center + glm::vec3(-r, h, 0)
-    );
-
-
-    // Curva 4: izquierda hacia frente
-
-    Bezier curve4(
-        center + glm::vec3(-r, h, 0),
-        center + glm::vec3(-r, h, k * r),
-        center + glm::vec3(-k * r, h, r),
-        center + glm::vec3(0, h, r)
-    );
-
-
-    // =====================================================
-    // 12. BUCLE PRINCIPAL
-    // =====================================================
+    // =============================================
+    // 14. BUCLE PRINCIPAL
+    // =============================================
 
     while (!glfwWindowShouldClose(window))
     {
@@ -308,64 +276,107 @@ int main()
         lastFrame = currentFrame;
 
 
-        // Actualizar camara
+        // =========================================
+        // 15. INICIAR FRAME DE INTERFAZ
+        // =========================================
 
-        camera.ProcessInputs(window, deltaTime);
+        interfaz.BeginFrame();
 
 
-        // =================================================
-        // 13. CONTROLES MANUALES
-        // =================================================
+        // =========================================
+        // 16. DIBUJAR PANEL DEL DRAGON
+        // =========================================
+
+        interfaz.Draw(dragonController);
+
+
+        // =========================================
+        // 17. CAMBIAR MODO DE CAMARA CON TAB
+        // =========================================
+
+        bool currentTab =
+            glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS;
+
+        if (currentTab && !previousTab)
+        {
+            cameraMode = !cameraMode;
+
+            camera.SetCameraMode(window, cameraMode);
+
+            std::cout << "Modo actual: "
+                << (cameraMode ? "CAMARA 3D" : "INTERFAZ IMGUI")
+                << std::endl;
+        }
+
+        previousTab = currentTab;
+
+
+        // =========================================
+        // 18. ACTUALIZAR CAMARA
+        // =========================================
+
+        if (cameraMode &&
+            !interfaz.WantsCaptureKeyboard() &&
+            !interfaz.WantsCaptureMouse())
+        {
+            camera.ProcessInputs(window, deltaTime);
+        }
+
+
+        // =========================================
+        // 19. CONTROLES DE TECLADO
+        // =========================================
 
         bool currentP =
+            !interfaz.WantsCaptureKeyboard() &&
             glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS;
 
         bool currentR =
+            !interfaz.WantsCaptureKeyboard() &&
             glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS;
 
         bool currentLeftBracket =
+            !interfaz.WantsCaptureKeyboard() &&
             glfwGetKey(window, GLFW_KEY_LEFT_BRACKET) == GLFW_PRESS;
 
         bool currentRightBracket =
+            !interfaz.WantsCaptureKeyboard() &&
             glfwGetKey(window, GLFW_KEY_RIGHT_BRACKET) == GLFW_PRESS;
 
 
-        // P: pausar o continuar
+        // P: pausar o continuar vuelo y alas
 
         if (currentP && !previousP)
         {
-            dragon.SetPaused(!dragon.IsPaused());
+            bool pause = !dragonController.AreWingsPaused();
+
+            dragonController.SetWingsPaused(pause);
+            dragonController.SetFlightPaused(pause);
 
             std::cout << "Animacion: "
-                << (dragon.IsPaused() ? "PAUSADA" : "REPRODUCIENDO")
+                << (pause ? "PAUSADA" : "REPRODUCIENDO")
                 << std::endl;
         }
 
 
-        // R: reiniciar toda la secuencia
+        // R: reiniciar recorrido
 
         if (currentR && !previousR)
         {
-            flightTime = 0.0f;
-
-            dragon.SetAnimationRange(
-                21.07f,
-                40.00f,
-                true
-            );
+            dragonController.Reset();
 
             std::cout << "Vuelo reiniciado" << std::endl;
         }
 
 
-        // [: retroceder
+        // [: retroceder animacion
 
         if (currentLeftBracket && !previousLeftBracket)
         {
-            dragon.SetPaused(true);
+            dragonController.SetWingsPaused(true);
+            dragonController.SetFlightPaused(true);
 
-            float newTime =
-                dragon.GetAnimationTime() - 0.1f;
+            float newTime = dragon.GetAnimationTime() - 0.1f;
 
             dragon.SetAnimationTime(newTime);
 
@@ -375,14 +386,14 @@ int main()
         }
 
 
-        // ]: avanzar
+        // ]: avanzar animacion
 
         if (currentRightBracket && !previousRightBracket)
         {
-            dragon.SetPaused(true);
+            dragonController.SetWingsPaused(true);
+            dragonController.SetFlightPaused(true);
 
-            float newTime =
-                dragon.GetAnimationTime() + 0.1f;
+            float newTime = dragon.GetAnimationTime() + 0.1f;
 
             dragon.SetAnimationTime(newTime);
 
@@ -391,6 +402,8 @@ int main()
                 << " segundos" << std::endl;
         }
 
+
+        // Guardar estado de las teclas
 
         previousP = currentP;
         previousR = currentR;
@@ -398,9 +411,9 @@ int main()
         previousRightBracket = currentRightBracket;
 
 
-        // =================================================
-        // 14. ACTUALIZAR VENTANA
-        // =================================================
+        // =========================================
+        // 20. ACTUALIZAR VENTANA
+        // =========================================
 
         int width, height;
 
@@ -419,7 +432,9 @@ int main()
         glViewport(0, 0, width, height);
 
 
-        // Limpiar pantalla
+        // =========================================
+        // 21. LIMPIAR PANTALLA
+        // =========================================
 
         glClearColor(
             0.58f,
@@ -434,21 +449,16 @@ int main()
         );
 
 
-        // =============================================
-        // ANIMACION CONTINUA DEL VUELO
-        // =============================================
+        // =========================================
+        // 22. ACTUALIZAR CONTROLADOR DEL DRAGON
+        // =========================================
 
-        dragon.Update(deltaTime);
+        dragonController.Update(deltaTime);
 
-        // Actualizar trayectoria Bezier
-        if (!dragon.IsPaused())
-        {
-            flightTime += deltaTime;
-        }
 
-        // =================================================
-        // 16. TRANSFORMACION DEL CASTILLO
-        // =================================================
+        // =========================================
+        // 23. TRANSFORMACION DEL CASTILLO
+        // =========================================
 
         glm::mat4 model(1.0f);
 
@@ -470,9 +480,9 @@ int main()
         );
 
 
-        // =================================================
-        // 17. RENDERIZAR CASTILLO
-        // =================================================
+        // =========================================
+        // 24. RENDERIZAR CASTILLO
+        // =========================================
 
         shaderProgram.Activate();
 
@@ -505,9 +515,9 @@ int main()
         modelGLTF.Draw(shaderProgram);
 
 
-        // =================================================
-        // 18. MATRICES DE CAMARA
-        // =================================================
+        // =========================================
+        // 25. MATRICES DE CAMARA
+        // =========================================
 
         glm::mat4 view = camera.GetViewMatrix();
 
@@ -518,107 +528,31 @@ int main()
                 3000.0f
             );
 
-        glm::mat4 viewProjection =
-            projection * view;
+        glm::mat4 viewProjection = projection * view;
 
 
-        // =================================================
-        // 19. TRANSFORMACION DEL DRAGON
-        // =================================================
+        // =========================================
+        // 26. DIBUJAR TRAYECTORIA BEZIER
+        // =========================================
 
-        glm::mat4 dragonModel(1.0f);
-
-        if (!flightStarted)
-        {
-            // Posicion inicial del dragon
-
-            dragonModel = glm::translate(
-                dragonModel,
-                glm::vec3(0.0f, 3.0f, 0.0f)
-            );
-        }
-        else
-        {
-            // Tiempo normalizado del circuito
-
-            float t = std::fmod(
-                flightTime / flightDuration,
-                1.0f
-            );
-
-            glm::vec3 position(0.0f);
-            glm::vec3 tangent(0.0f);
-
-
-            // Seleccionar curva correspondiente
-
-            if (t < 0.25f)
-            {
-                float localT = t * 4.0f;
-
-                position = curve1.GetPosition(localT);
-                tangent = curve1.GetTangent(localT);
-            }
-            else if (t < 0.50f)
-            {
-                float localT = (t - 0.25f) * 4.0f;
-
-                position = curve2.GetPosition(localT);
-                tangent = curve2.GetTangent(localT);
-            }
-            else if (t < 0.75f)
-            {
-                float localT = (t - 0.50f) * 4.0f;
-
-                position = curve3.GetPosition(localT);
-                tangent = curve3.GetTangent(localT);
-            }
-            else
-            {
-                float localT = (t - 0.75f) * 4.0f;
-
-                position = curve4.GetPosition(localT);
-                tangent = curve4.GetTangent(localT);
-            }
-
-
-            // Orientacion horizontal
-
-            float yaw = atan2(
-                tangent.x,
-                tangent.z
-            );
-
-
-            // Aplicar posicion
-
-            dragonModel = glm::translate(
-                dragonModel,
-                position
-            );
-
-
-            // Aplicar orientacion
-
-            dragonModel = glm::rotate(
-                dragonModel,
-                yaw,
-                glm::vec3(0.0f, 1.0f, 0.0f)
-            );
-        }
-
-
-        // Escala del dragon
-
-        dragonModel = glm::scale(
-            dragonModel,
-            glm::vec3(0.025f)
+        dragonPath.Draw(
+            curveShader.ID,
+            viewProjection,
+            interfaz.GetShowTrajectory()
         );
 
 
-        // =================================================
-        // 20. RENDERIZAR MOUNTAIN DRAGON
-        // =================================================
+        // =========================================
+        // 27. TRANSFORMACION DEL DRAGON
+        // =========================================
+
+        glm::mat4 dragonModel =
+            dragonController.GetModelMatrix();
+
+
+        // =========================================
+        // 28. RENDERIZAR MOUNTAIN DRAGON
+        // =========================================
 
         dragonShader.Activate();
 
@@ -646,9 +580,16 @@ int main()
         );
 
 
-        // =================================================
-        // 21. ACTUALIZAR VENTANA
-        // =================================================
+        // =========================================
+        // 29. RENDERIZAR INTERFAZ
+        // =========================================
+
+        interfaz.Render();
+
+
+        // =========================================
+        // 30. ACTUALIZAR VENTANA
+        // =========================================
 
         glfwSwapBuffers(window);
 
@@ -656,9 +597,15 @@ int main()
     }
 
 
-    // =====================================================
-    // 22. LIBERAR RECURSOS
-    // =====================================================
+    // =============================================
+    // 31. LIBERAR RECURSOS
+    // =============================================
+
+    interfaz.Shutdown();
+
+    dragonPath.Delete();
+
+    curveShader.Delete();
 
     dragon.Delete();
 
@@ -669,7 +616,12 @@ int main()
     shaderProgram.Delete();
 
 
+    // =============================================
+    // 32. FINALIZAR GLFW
+    // =============================================
+
     glfwDestroyWindow(window);
+
     glfwTerminate();
 
     return 0;
