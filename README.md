@@ -1,330 +1,222 @@
-\# 🏰 Castillo y Mountain Dragon
+# 🏰 Castillo y Mountain Dragon
 
+**Proyecto de Computación Gráfica | C++ · OpenGL 4.5**
 
+Proyecto de visualización 3D interactiva desarrollado en C++ utilizando OpenGL. Consiste en una escena compuesta por un castillo y un Mountain Dragon animado, cuyo desplazamiento se realiza mediante una trayectoria circular construida con curvas cúbicas de Bézier.
 
-Proyecto desarrollado en \*\*C++ y OpenGL\*\* que consiste en una escena 3D interactiva compuesta por un castillo y un dragón animado. El proyecto implementa carga de modelos mediante glTF, animaciones esqueléticas, curvas de Bézier para generar trayectorias circulares y una interfaz gráfica interactiva mediante Dear ImGui.
+El proyecto integra modelado 3D, transformaciones geométricas, animación glTF, iluminación, shaders y una interfaz gráfica desarrollada con Dear ImGui.
 
+---
 
+## 📸 Vista del proyecto
 
-\## 📌 Descripción del proyecto
+<!-- Agregar aquí capturas de pantalla del proyecto -->
 
+| Escena 3D | Trayectoria Bézier |
+|:---:|:---:|
+| Captura del castillo y el dragón | Captura de la trayectoria circular |
 
+| Interfaz Dear ImGui |
+|:---:|
+| Captura del panel de control |
 
-El proyecto permite visualizar un escenario 3D en el que un Mountain Dragon realiza un recorrido circular alrededor de un castillo, siguiendo una trayectoria construida mediante curvas cúbicas de Bézier.
+---
 
+## 📖 Descripción general
 
+El objetivo del proyecto es desarrollar una escena 3D interactiva en la que un Mountain Dragon realiza un recorrido alrededor de un castillo.
 
-El dragón cuenta con una animación glTF que permite controlar el movimiento de sus alas de manera independiente al desplazamiento por la trayectoria.
+Para conseguirlo, se implementaron cuatro curvas cúbicas de Bézier conectadas entre sí, formando una trayectoria circular. El dragón utiliza la posición y la tangente de estas curvas para desplazarse y orientar su modelo durante el vuelo.
 
+Además, se implementó un sistema de animación glTF que permite controlar independientemente el movimiento de las alas y el desplazamiento del personaje.
 
+La escena cuenta con una cámara 3D y una interfaz gráfica que permite modificar diferentes parámetros durante la ejecución.
 
-También incorpora una cámara interactiva para navegar por la escena y una interfaz gráfica que permite modificar diferentes parámetros durante la ejecución.
+---
 
+## ✨ Funcionalidades
 
+- Carga y visualización de modelos 3D mediante archivos glTF.
+- Reproducción de animaciones del Mountain Dragon.
+- Trayectoria circular mediante cuatro curvas cúbicas de Bézier.
+- Movimiento automático del dragón sobre la trayectoria.
+- Orientación del dragón según la dirección del recorrido.
+- Visualización de las curvas respetando la profundidad de la escena.
+- Cámara 3D con movimiento mediante teclado y mouse.
+- Iluminación dinámica del escenario.
+- Interfaz gráfica interactiva con Dear ImGui.
+- Control independiente del vuelo y la animación de las alas.
+- Modificación de la velocidad y escala del dragón.
+- Visualización y ocultamiento de la trayectoria.
 
-\## 🚀 Funcionalidades principales
+---
 
+## 🛠️ Tecnologías utilizadas
 
-
-\- Carga y renderizado de modelos 3D en formato glTF.
-
-\- Animación del Mountain Dragon mediante animaciones glTF.
-
-\- Implementación de cuatro curvas cúbicas de Bézier para construir una trayectoria circular.
-
-\- Movimiento del dragón siguiendo la trayectoria.
-
-\- Orientación del modelo según la dirección de la curva.
-
-\- Visualización de la trayectoria con profundidad respecto al escenario.
-
-\- Cámara 3D con movimiento y rotación mediante teclado y mouse.
-
-\- Interfaz gráfica desarrollada con Dear ImGui.
-
-\- Control independiente del vuelo y la animación de las alas.
-
-\- Ajuste de velocidad y escala del dragón.
-
-\- Iluminación de la escena 3D.
-
-
-
-\## 🛠️ Tecnologías y herramientas
-
-
-
-| Tecnología | Utilización |
-
+| Tecnología | Aplicación |
 |---|---|
-
-| C++ | Lenguaje de programación |
-
-| OpenGL 4.5 | Renderizado gráfico |
-
-| GLFW | Creación y gestión de ventanas y entradas |
-
-| GLAD | Carga de funciones de OpenGL |
-
-| GLM | Operaciones matemáticas y matrices |
-
+| C++ | Desarrollo de la aplicación |
+| OpenGL 4.5 | Renderizado 3D |
+| GLFW | Ventana y gestión de entradas |
+| GLAD | Carga de funciones OpenGL |
+| GLM | Matemáticas y transformaciones 3D |
 | TinyGLTF | Lectura de modelos glTF |
-
-| Dear ImGui | Interfaz gráfica interactiva |
-
+| Dear ImGui | Interfaz gráfica |
 | GLSL | Programación de shaders |
-
 | Visual Studio | Entorno de desarrollo |
 
+---
 
+## 🧩 Arquitectura del proyecto
 
-\## 📂 Organización del código
+El código está organizado mediante clases independientes para facilitar su mantenimiento y comprensión.
 
-
-
-El proyecto utiliza una arquitectura modular en la que cada clase tiene una responsabilidad específica.
-
-
-
-| Archivo | Responsabilidad |
-
+| Archivo | Descripción |
 |---|---|
-
-| `Main.cpp` | Inicialización y coordinación general de la escena. |
-
-| `Camera.h / Camera.cpp` | Movimiento y control de la cámara 3D. |
-
-| `Bezier.h / Bezier.cpp` | Cálculo y generación de las curvas de Bézier. |
-
-| `DragonController.h / DragonController.cpp` | Control del movimiento, velocidad y escala del dragón. |
-
-| `Interfaz.h / Interfaz.cpp` | Gestión de la interfaz gráfica Dear ImGui. |
-
+| `Main.cpp` | Inicialización y coordinación general del proyecto. |
+| `Camera.h / Camera.cpp` | Control de la cámara y navegación 3D. |
+| `Bezier.h / Bezier.cpp` | Cálculo matemático de las curvas y construcción de la trayectoria. |
+| `DragonController.h / DragonController.cpp` | Control del movimiento, velocidad, escala y animación del dragón. |
+| `Interfaz.h / Interfaz.cpp` | Gestión de la interfaz gráfica mediante Dear ImGui. |
 | `AnimatedModelGLTF.h / AnimatedModelGLTF.cpp` | Carga y reproducción de animaciones glTF. |
-
 | `ModelGLTF.h / ModelGLTF.cpp` | Carga y renderizado del castillo. |
-
 | `Iluminacion.h / Iluminacion.cpp` | Configuración y aplicación de iluminación. |
+| `ShaderClass.h / ShaderClass.cpp` | Administración de shaders. |
 
-| `ShaderClass.h / ShaderClass.cpp` | Gestión de los shaders. |
+---
 
+## 🎮 Controles del proyecto
 
+### Cámara 3D
 
-\## 🎮 Controles
-
-
-
-\### Cámara 3D
-
-
-
-| Tecla | Función |
-
+| Tecla | Acción |
 |---|---|
+| `TAB` | Alternar entre modo cámara e interfaz. |
+| `W` | Avanzar. |
+| `S` | Retroceder. |
+| `A` | Desplazarse a la izquierda. |
+| `D` | Desplazarse a la derecha. |
+| `SPACE` | Subir. |
+| `SHIFT` | Bajar. |
+| Mouse | Rotar la cámara en modo 3D. |
 
-| TAB | Alternar entre cámara 3D e interfaz. |
+### Control del Mountain Dragon
 
-| W | Avanzar. |
-
-| S | Retroceder. |
-
-| A | Desplazarse a la izquierda. |
-
-| D | Desplazarse a la derecha. |
-
-| SPACE | Subir. |
-
-| SHIFT | Bajar. |
-
-| Mouse | Rotar la cámara cuando está activo el modo 3D. |
-
-
-
-\### Control del dragón
-
-
-
-| Tecla | Función |
-
+| Tecla | Acción |
 |---|---|
+| `P` | Pausar o reanudar el vuelo y las alas. |
+| `R` | Reiniciar el recorrido. |
+| `[` | Retroceder la animación. |
+| `]` | Avanzar la animación. |
 
-| P | Pausar o reanudar el vuelo y las alas. |
+### Panel Dear ImGui
 
-| R | Reiniciar el recorrido. |
+La interfaz permite realizar las siguientes acciones:
 
-| \[ | Retroceder la animación glTF. |
+- Pausar y reanudar el vuelo.
+- Activar y pausar la animación de las alas.
+- Modificar la velocidad del vuelo.
+- Ajustar el tamaño del dragón.
+- Mostrar u ocultar la trayectoria Bézier.
+- Consultar el tiempo de vuelo.
+- Reiniciar el recorrido.
 
-| ] | Avanzar la animación glTF. |
+---
 
+## 📐 Implementación matemática: curvas de Bézier
 
+La trayectoria del dragón se construye mediante cuatro curvas cúbicas de Bézier.
 
-\### Interfaz Dear ImGui
+Cada curva utiliza cuatro puntos:
 
+- **P0:** punto inicial.
+- **P1:** primer punto de control.
+- **P2:** segundo punto de control.
+- **P3:** punto final.
 
+La posición se obtiene mediante la siguiente expresión:
 
-La interfaz permite:
+\[
+B(t)=(1-t)^3P_0+3(1-t)^2tP_1+3(1-t)t^2P_2+t^3P_3
+\]
 
+Donde \(t\) representa el progreso sobre la curva y toma valores entre 0 y 1.
 
+También se calcula la tangente de la curva para determinar la dirección del movimiento y orientar el modelo durante el recorrido.
 
-\- Pausar y reanudar el vuelo.
+Las cuatro curvas se conectan para formar una trayectoria circular alrededor del escenario.
 
-\- Pausar y activar la animación de las alas.
+---
 
-\- Modificar la velocidad del vuelo.
+## ⚙️ Instalación y ejecución
 
-\- Ajustar el tamaño del dragón.
+### Requisitos
 
-\- Mostrar u ocultar la trayectoria de Bézier.
+- Windows.
+- Visual Studio con herramientas de desarrollo C++.
+- Compatibilidad con OpenGL 4.5.
+- GLFW.
+- GLAD.
+- GLM.
+- TinyGLTF.
+- Dear ImGui.
 
-\- Consultar el tiempo de vuelo.
+### Procedimiento
 
-\- Reiniciar el recorrido.
+**1. Clonar el repositorio**
 
+```bash
+git clone URL_DEL_REPOSITORIO
+```
 
+**2. Abrir el proyecto**
 
-\## 📐 Implementación de curvas de Bézier
+Abrir el archivo de solución `.sln` desde Visual Studio.
 
+**3. Configurar las bibliotecas**
 
+Verificar que las dependencias GLFW, GLAD, GLM, TinyGLTF y Dear ImGui estén disponibles y correctamente configuradas.
 
-La trayectoria del dragón se construye mediante cuatro curvas cúbicas de Bézier conectadas entre sí.
+**4. Verificar los recursos**
 
+Comprobar que los modelos glTF, las texturas y los shaders estén ubicados en las rutas utilizadas por el código.
 
+**5. Compilar y ejecutar**
 
-Cada curva utiliza cuatro puntos de control:
+Seleccionar la plataforma `x64`, compilar la solución y ejecutar el proyecto.
 
+> **Nota:** Las dependencias externas y los recursos que no estén incluidos en el repositorio deben obtenerse y configurarse por separado.
 
+---
 
-\- P0: punto inicial.
+## 📚 Conceptos aplicados
 
-\- P1: primer punto de control.
+Durante el desarrollo se trabajaron los siguientes conceptos de computación gráfica:
 
-\- P2: segundo punto de control.
+- Sistemas de coordenadas 3D.
+- Transformaciones de traslación, rotación y escala.
+- Matrices de modelo, vista y proyección.
+- Renderizado mediante shaders.
+- Iluminación de escenas 3D.
+- Carga y animación de modelos glTF.
+- Interpolación mediante curvas de Bézier.
+- Manejo de entradas de teclado y mouse.
+- Interfaces gráficas interactivas.
 
-\- P3: punto final.
+---
 
+## 👨‍💻 Información del proyecto
 
+**Nombre:** Castillo y Mountain Dragon
 
-La posición se calcula mediante la ecuación:
+**Lenguaje:** C++
 
+**API gráfica:** OpenGL 4.5
 
+**Entorno de desarrollo:** Visual Studio
 
-\\\[
+**Área:** Computación Gráfica
 
-B(t)=(1-t)^3P\_0+3(1-t)^2tP\_1+3(1-t)t^2P\_2+t^3P\_3
+---
 
-\\]
-
-
-
-Donde \\(t\\) representa el progreso sobre la curva, entre 0 y 1.
-
-
-
-La tangente permite obtener la dirección del recorrido y orientar el modelo del dragón durante su desplazamiento.
-
-
-
-\## ⚙️ Instalación y ejecución
-
-
-
-\### Requisitos
-
-
-
-\- Windows.
-
-\- Visual Studio con herramientas de desarrollo de C++.
-
-\- OpenGL 4.5 compatible.
-
-\- GLFW.
-
-\- GLAD.
-
-\- GLM.
-
-\- TinyGLTF.
-
-\- Dear ImGui.
-
-
-
-\### Pasos
-
-
-
-1\. Clonar el repositorio:
-
-
-
-&#x20;  ```bash
-
-&#x20;  git clone URL\_DEL\_REPOSITORIO
-
-&#x20;  ```
-
-
-
-2\. Abrir la solución `.sln` en Visual Studio.
-
-
-
-3\. Verificar que las bibliotecas GLFW, GLAD, GLM, TinyGLTF y Dear ImGui estén instaladas y correctamente configuradas.
-
-
-
-4\. Comprobar los directorios de inclusión y las dependencias de enlazado.
-
-
-
-5\. Verificar que las carpetas `models` y los shaders estén ubicados correctamente.
-
-
-
-6\. Seleccionar la configuración de compilación correspondiente (x64).
-
-
-
-7\. Compilar y ejecutar el proyecto.
-
-
-
-\*\*Nota:\*\* Las bibliotecas externas y los recursos 3D deben estar disponibles en las rutas utilizadas por el proyecto. Si no están incluidos en el repositorio, deben configurarse por separado.
-
-
-
-\## 👨‍💻 Desarrollo
-
-
-
-Este proyecto fue desarrollado como ejercicio académico de computación gráfica 3D, aplicando conceptos de:
-
-
-
-\- Transformaciones geométricas.
-
-\- Matrices de modelo, vista y proyección.
-
-\- Renderizado mediante shaders.
-
-\- Animación de modelos 3D.
-
-\- Interpolación mediante curvas de Bézier.
-
-\- Manejo de entradas de teclado y mouse.
-
-\- Interfaces gráficas interactivas.
-
-
-
-\---
-
-
-
-\*\*Proyecto:\*\* Castillo y Mountain Dragon  
-
-\*\*Lenguaje:\*\* C++  
-
-\*\*Motor gráfico:\*\* OpenGL 4.5
-
+*Proyecto académico desarrollado como ejercicio de programación gráfica 3D.*
